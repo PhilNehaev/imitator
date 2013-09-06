@@ -7,7 +7,7 @@ var fs = require('fs'),
 
 util.inherits(CacheStream, stream.Transform);
 
-function CacheStream(key, res) {
+function CacheStream(cacheDir, imitatorHeaders, key, res) {
 
     stream.Transform.call(this);
     this._writableState.objectMode = false;
@@ -16,7 +16,9 @@ function CacheStream(key, res) {
     this._decoder = new StringDecoder('utf8');
     this.res = res;
     this.cacheKey = key;
+    this.cacheDir = cacheDir;
     this.cachePath = this.getCachePath(this.cacheKey);
+    this.imitatorHeaders = imitatorHeaders;
 }
 
 CacheStream.prototype._transform = function(chunk, encoding, cb) {
@@ -30,60 +32,66 @@ CacheStream.prototype._flush = function(cb) {
     var rem = this._buffer.trim(),
         data = {};
 
-    if (rem) {
+    if (!rem) {
 
-        try {
+        return;
+    }
 
-            data = JSON.parse(rem);
-        } catch (er) {
+    try {
 
-            this.emit('error', er);
-            return;
-        }
+        data = JSON.parse(rem);
+    } catch (er) {
 
-        if (this.isValidResponse(data)) {
+        this.emit('error', 'JSON.parse error: ' + er);
+        return;
+    }
 
-            fs.writeFile(this.cachePath, this._buffer, function(err) {
+    if (this.isValidResponse(data)) {
 
-                console[err ? 'error' : 'log']('  Response write to cache');
-            });
+        fs.writeFile(this.cachePath, this._buffer, function(err) {
 
-            console.log('  Response from source');
-            this.push(this._buffer);
-            cb();
-        } else {
+            console[err ? 'error' : 'log']('  Response write to cache');
+        });
 
-            fs.exists(this.cachePath, function(isExist) {
+        console.log('  Response from source');
+        this.res.writeHead(200, this.req.headers);
+        this.push(this._buffer);
+        cb();
+    } else {
 
-                console.log('  Cache: ' + isExist);
+        fs.exists(this.cachePath, function(isExist) {
 
-                if (isExist) {
+            console.log('  Cache: ' + isExist);
 
-                    fs.readFile(this.cachePath, function(err, data) {
+            if (isExist) {
 
-                        this.push(data);
-                        cb();
-                        console.log('  Response from cache');
-                    }.bind(this));
-                } else {
+                fs.readFile(this.cachePath, function(err, data) {
 
-                    this.push('{"resultCode":"NOT_VALID"}');
+                    this.push(data);
                     cb();
-                    console.log('  Not valid');
-                }
-            }.bind(this));
-        }
+                    console.log('  Response from cache');
+                }.bind(this));
+            } else {
+
+                this.res.writeHead(200, this.imitatorHeaders);
+                this.push('{"resultCode":"IMITATOR_CACHE_EMPTY",' +
+                    '"errorMessage":"Response was not is valid and cache empty"}');
+                cb();
+                console.log('  Not valid');
+            }
+        }.bind(this));
     }
 };
 
 CacheStream.prototype.getCachePath = function(cacheKey) {
 
-    return path.join('cache', cacheKey + '.cache');
+    return path.join(this.cacheDir, cacheKey + '.cache');
 };
 
 CacheStream.prototype.isValidResponse = function(data) {
 
-    return data.resultCode !== 'INTERNAL_ERROR' && this.res.statusCode === 200;
+    return _.indexOf(['INVALID_REQUEST_DATA', 'INTERNAL_ERROR', 'INSUFFICIENT_PRIVILEGES'], data.resultCode) < 0
+        && this.req.statusCode === 200;
 };
 
 module.exports = CacheStream;
