@@ -5,12 +5,14 @@ var config = require('../config'),
 
 util.inherits(CacheStream, stream.Transform);
 
-function CacheStream(storage, cacheKey, res) {
+function CacheStream(storage, cacheKey, req) {
 
-    this.storage = storage;
-    this.cacheKey = cacheKey;
+    this._storage = storage;
+    this._cacheKey = cacheKey;
+    this._req = req;
 
     stream.Transform.call(this);
+
     this._writableState.objectMode = false;
     this._readableState.objectMode = true;
     this._buffer = '';
@@ -25,61 +27,59 @@ CacheStream.prototype._transform = function(chunk, encoding, cb) {
 
 CacheStream.prototype._flush = function(cb) {
 
-    var rem = this._buffer.trim(),
-        data = {};
-
-    if (!rem) {
-
-        return;
-    }
+    var data = this._buffer.trim();
 
     try {
 
-        data = JSON.parse(rem);
-    } catch (er) {
+        data = this.parse(data);
+    } catch (err) {
 
-        this.emit('error', 'JSON.parse error: ' + er);
+        this.emit('error', 'Parse error: ' + err);
         return;
     }
 
-    if (this.isValidResponse(data)) {
+    if (this.isValid(data)) {
 
-        this.storage.write(this.cacheKey, this._buffer, function(err) {
+        this._storage.write(this._cacheKey, this._buffer, function(err) {
 
             console[err ? 'error' : 'log']('  Response write to cache');
         });
 
-        console.log('  Response from source');
+        console.log('  Response from target server');
         this.push(this._buffer);
         cb();
     } else {
 
-        this.storage.read(this.cacheKey, function(err, data) {
+        this._storage.read(this._cacheKey, function(err, data) {
 
-            var isExist = !err && data;
-
-            console.log('  Cache: ' + isExist);
-
-            if (!isExist) {
-
-                this.push('{"resultCode":"IMITATOR_CACHE_EMPTY",' +
-                    '"errorMessage":"Response was not is valid and cache empty"}');
-                cb();
-                console.log('  Not valid');
-                return;
-            }
-
-            this.push(data);
+            this.responseFromCache(err, data);
             cb();
-            console.log('  Response from cache');
         }.bind(this));
     }
 };
 
-CacheStream.prototype.isValidResponse = function(data) {
+CacheStream.prototype.isValid = function(data) {
 
     return ['INVALID_REQUEST_DATA', 'INTERNAL_ERROR', 'INSUFFICIENT_PRIVILEGES'].indexOf(data.resultCode) < 0 &&
-        this.req.statusCode === 200;
+        this._req.statusCode === 200;
+};
+
+CacheStream.prototype.parse = function(data) {
+
+    return JSON.parse(data);
+};
+
+CacheStream.prototype.responseFromCache = function(err, data) {
+
+    if (err && !data) {
+
+        this.push(data);
+        console.log('  Response from cache');
+        return;
+    }
+
+    this.push(config.responses[config.targetFormat].cacheEmpty);
+    console.log('  Response not valid and cache empty');
 };
 
 module.exports = CacheStream;

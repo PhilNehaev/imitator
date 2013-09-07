@@ -11,7 +11,15 @@ module.exports = {
         port: 80
     },
 
+    server: {
+
+        timeout: 5000,
+        port: process.env.PORT || 7000
+    },
+
     daoType: 'disk',
+
+    targetFormat: 'json',
 
     dao: {
 
@@ -25,5 +33,17 @@ module.exports = {
     imitationHeaders: {
 
         'access-control-allow-origin': '*'
+    },
+
+    responses: {
+
+        json: {
+
+            error: '{"resultCode":"IMITATOR_ERROR"}',
+            cacheEmpty: '{"resultCode":"IMITATOR_CACHE_EMPTY",' +
+                '"errorMessage":"Response was not is valid and cache empty"}',
+            timeout: '{"resultCode": "IMITATOR_ERROR",' +
+                '"errorMessage": "Was taken a global timeout"}'
+        }
     }
 };
