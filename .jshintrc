@@ -1,1 +1,7 @@
-{}
+{
+    "browser": true,
+    "laxbreak": true,
+    "newcap": true,
+    "maxlen": 121,
+    "indent": 4
+}

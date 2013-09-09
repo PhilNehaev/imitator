@@ -1,5 +1,7 @@
-var crypto = require('crypto'),
-    extend = require('underscore').extend;
+var config = require('./config'),
+    crypto = require('crypto'),
+    extend = require('underscore').extend,
+    url = require('url');
 
 module.exports = {
 
@@ -24,5 +26,21 @@ module.exports = {
         var match = mockPath.match(/\/api\/v1\/([a-z_]+)/);
 
         return match && match[1];
+    },
+
+    getRequestOptions: function(req) {
+
+        return {
+
+            host: config.target.host,
+            port: config.target.port,
+            method: req.method,
+            path: url.parse(req.url).path,
+            headers: extend({}, req.headers, {
+
+                host: config.host,
+                'accept-encoding': 'deflate'
+            })
+        };
     }
 };
