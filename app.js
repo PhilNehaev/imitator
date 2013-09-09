@@ -45,7 +45,7 @@ function serverHandler(req, res) {
             .on('error', responseOnFail)
             .on('timeout', responseOnFail);
 
-        target.setTimeout(2000);
+        target.setTimeout(config.target.timeout);
 
         req.pipe(target);
     }
