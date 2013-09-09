@@ -7,8 +7,9 @@ module.exports = {
      */
     target: {
 
-        host: 'uat.tcsbank.ru',
-        port: 80
+        host: '172.16.10.29',
+        port: 80,
+        format: 'json'
     },
 
     server: {
@@ -18,8 +19,6 @@ module.exports = {
     },
 
     daoType: 'disk',
-
-    targetFormat: 'json',
 
     dao: {
 

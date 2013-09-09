@@ -60,7 +60,7 @@ CacheStream.prototype._flush = function(cb) {
 
 CacheStream.prototype.isValid = function(data) {
 
-    return ['INVALID_REQUEST_DATA', 'INTERNAL_ERROR', 'INSUFFICIENT_PRIVILEGES'].indexOf(data.resultCode) < 0 &&
+    return ['INVALID_REQUEST_DATA', 'INTERNAL_ERROR'].indexOf(data.resultCode) < 0 &&
         this._req.statusCode === 200;
 };
 
@@ -78,7 +78,7 @@ CacheStream.prototype.responseFromCache = function(err, data) {
         return;
     }
 
-    this.push(config.responses[config.targetFormat].cacheEmpty);
+    this.push(config.responses[config.target.format].cacheEmpty);
     console.log('  Response not valid and cache empty');
 };
 

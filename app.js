@@ -55,7 +55,7 @@ function serverHandler(req, res) {
         var cacheStream = new CacheStream(cacheStorage, cacheKey, targetReq)
             .on('error', responseOnFail);
 
-        res.writeHead(200, config.imitationHeaders);
+        setHeaders(res);
 
         targetReq
             .pipe(cacheStream)
@@ -70,14 +70,21 @@ function serverHandler(req, res) {
 
     function responseFromCache(err, data) {
 
+        setHeaders(res);
+
         if (err || !data) {
 
-            res.end(config.responses[config.targetFormat].error);
+            res.end(config.responses[config.target.format].error);
             return;
         }
 
         res.end(data);
         console.log('  Response from cache');
+    }
+
+    function setHeaders(res) {
+
+        res.writeHead(200, config.imitationHeaders);
     }
 }
 
@@ -86,7 +93,7 @@ server.listen(config.server.port);
 
 server.on('timeout', function(res) {
 
-    res.end(config.responses[config.targetFormat].timeout);
+    res.end(config.responses[config.target.format].timeout);
 });
 
 process.on('uncaughtException', console.error);
