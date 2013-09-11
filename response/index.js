@@ -23,7 +23,7 @@ function Response(res, options) {
 
 Response.prototype.onFail = function(err) {
 
-    console.log('  ' + err);
+    console.log('  ' + (err || 'Error'));
     cacheStorage.read(this.cacheKey, this.fromCache);
 
     return this;

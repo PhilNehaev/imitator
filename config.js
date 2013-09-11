@@ -33,8 +33,8 @@ module.exports = {
 
     imitationHeaders: {
 
-        'access-control-allow-origin': '*',
-        'x-powered-by': 'imitator'
+        'Access-Control-Allow-Origin': '*',
+        'X-Powered-By': 'imitator'
     },
 
     responses: {

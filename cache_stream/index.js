@@ -60,8 +60,13 @@ CacheStream.prototype._flush = function(cb) {
 
 CacheStream.prototype.isValid = function(data) {
 
-    return ['INVALID_REQUEST_DATA', 'INTERNAL_ERROR'].indexOf(data.resultCode) < 0 &&
-        this._req.statusCode === 200;
+    return [
+        'INVALID_REQUEST_DATA',
+        'INTERNAL_ERROR',
+        'AUTHENTICATION_FAILED',
+        'INSUFFICIENT_PRIVILEGES',
+        'REQUEST_RATE_LIMIT_EXCEEDED'
+    ].indexOf(data.resultCode) < 0 && this._req.statusCode === 200;
 };
 
 CacheStream.prototype.parse = function(data) {
