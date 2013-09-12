@@ -26,7 +26,8 @@ module.exports = {
 
         disk: {
 
-            cache: path.join(__dirname, 'disk/cache'),
+            cache: path.join(__dirname, 'disk/cache_response'),
+            'sid.cache': path.join(__dirname, 'disk/cache_sid'),
             json: path.join(__dirname, 'disk/mocks')
         }
     },

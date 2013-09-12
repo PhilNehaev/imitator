@@ -1,7 +1,9 @@
 {
     "dependencies": {
-        "underscore": "*",
+        "lodash": "*",
         "optimist": "*",
-        "router": "*"
+        "router": "*",
+        "event-stream": "*",
+        "JSONStream": "*"
     }
 }

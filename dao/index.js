@@ -31,11 +31,15 @@ DAO.prototype.read = function(key, cb) {
 
         if (isExist) {
 
-            fs.readFile(filePath, cb);
+            fs.readFile(filePath, {
+
+                encoding: 'utf-8'
+            }, cb);
+
             return;
         }
 
-        cb(true, 'File ' + filePath + ' not found');
+        cb(true);
     });
 };
 

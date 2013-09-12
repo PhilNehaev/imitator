@@ -5,7 +5,7 @@ var config = require('../config'),
 
 var cacheStorage = new DAO(config.daoType, 'cache');
 
-function Response(res, options) {
+function Response(res, cacheKey, options) {
 
     if (arguments.length < 2) {
 
@@ -13,8 +13,8 @@ function Response(res, options) {
     }
 
     this.res = res;
+    this.cacheKey = cacheKey;
     this.options = options;
-    this.cacheKey = utils.getCacheKey(options);
 
     this.onFail = this.onFail.bind(this);
     this.fromCache = this.fromCache.bind(this);

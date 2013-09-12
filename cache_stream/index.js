@@ -1,6 +1,7 @@
 var config = require('../config'),
     util = require('util'),
     stream = require('stream'),
+    _ = require('lodash'),
     StringDecoder = require('string_decoder').StringDecoder;
 
 util.inherits(CacheStream, stream.Transform);
@@ -60,13 +61,23 @@ CacheStream.prototype._flush = function(cb) {
 
 CacheStream.prototype.isValid = function(data) {
 
+    var isPayloadCorrectly = _.isString(data.payload);
+
+    if (!isPayloadCorrectly) {
+
+        try {
+
+            isPayloadCorrectly = !!_.values(data.payload).length;
+        } catch(e) {
+
+            isPayloadCorrectly = false;
+        }
+    }
+
     return [
-        'INVALID_REQUEST_DATA',
-        'INTERNAL_ERROR',
-        'AUTHENTICATION_FAILED',
-        'INSUFFICIENT_PRIVILEGES',
-        'REQUEST_RATE_LIMIT_EXCEEDED'
-    ].indexOf(data.resultCode) < 0 && this._req.statusCode === 200;
+        'INVALID_REQUEST_DATA', 'INTERNAL_ERROR', 'AUTHENTICATION_FAILED',
+        'INSUFFICIENT_PRIVILEGES', 'REQUEST_RATE_LIMIT_EXCEEDED'
+    ].indexOf(data.resultCode) < 0 && isPayloadCorrectly && this._req.statusCode === 200;
 };
 
 CacheStream.prototype.parse = function(data) {

@@ -5,14 +5,23 @@ var config = require('../config'),
 
 module.exports = function defaultHandler(req, res) {
 
-    var options = utils.getRequestOptions(req),
-        response = new Response(res, options);
+    var options = utils.getRequestOptions(req);
 
-    var target = http.request(options, response.fromTarget)
-        .on('error', response.onFail)
-        .on('timeout', response.onFail);
+    utils.getCacheKey(options, function(err, cacheKey) {
 
-    target.setTimeout(config.target.timeout);
+        var response = new Response(res, cacheKey, options);
 
-    req.pipe(target);
+        if (err) {
+
+            response.fromCache(err);
+        }
+
+        var target = http.request(options, response.fromTarget)
+            .on('error', response.onFail)
+            .on('timeout', response.onFail);
+
+        target.setTimeout(config.target.timeout);
+
+        req.pipe(target);
+    });
 };

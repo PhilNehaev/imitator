@@ -1,24 +1,38 @@
 var config = require('./config'),
     crypto = require('crypto'),
-    extend = require('underscore').extend,
-    url = require('url');
+    extend = require('lodash').extend,
+    url = require('url'),
+    qs = require('querystring'),
+    DAO = require('./dao');
+
+var sessionStorage = new DAO(config.daoType, 'sid.cache');
 
 module.exports = {
 
-    getCacheKey: function(_input) {
+    getCacheKey: function(_options, cb) {
 
-        var input = extend({}, _input, {
+        var params = qs.parse(url.parse(_options.path).query) || {},
+            options = extend({}, _options, {
 
-            path: _input.path
-                .replace(/(&|\?)_=\d+/, '') // ignore jquery no-cache
-                .replace(/(&|\?)sessionid=[\w\d\.\-]+/, ''), // ignore sessionid param
-            headers: {}
+                path: _options.path
+                    .replace(/(&|\?)_=\d+/, '') // ignore jquery no-cache
+                    .replace(/(&|\?)sessionid=[\w\d\.\-]+/, ''), // ignore sessionid param
+                headers: {}
+            });
+
+        sessionStorage.read(params.sessionid, function(err, data) {
+
+            options.linkedUsername = data;
+
+            console.log(data);
+
+            cb(
+                null,
+                crypto.createHash('md5')
+                    .update(JSON.stringify(options))
+                    .digest('hex')
+            );
         });
-
-        return crypto
-            .createHash('md5')
-            .update(JSON.stringify(input))
-            .digest('hex');
     },
 
     getMockKey: function(mockPath) {
