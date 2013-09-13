@@ -4,7 +4,7 @@ var config = require('../config'),
     Response = require('../response'),
     JSONStream = require('JSONStream'),
     es = require('event-stream'),
-    DAO = require('../DAO'),
+    DAO = require('../dao'),
     url = require('url'),
     qs = require('querystring');
 
