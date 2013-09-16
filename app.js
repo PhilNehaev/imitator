@@ -18,4 +18,4 @@ server.on('timeout', function(res) {
     res.end(config.responses[config.target.format].timeout);
 });
 
-process.on('uncaughtException', console.error);
+//process.on('uncaughtException', console.error);

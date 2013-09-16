@@ -39,6 +39,7 @@ Response.prototype.fromCache = function(err, data) {
         return this;
     }
 
+    console.log(data);
     this.res.end(data);
     console.log('  Response from cache');
 

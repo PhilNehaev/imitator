@@ -41,7 +41,12 @@ MongoDAO.prototype.write = function(key, data, cb) {
     }, {
 
         upsert: true
-    }, cb);
+    }, function(err, model) {
+
+        if (cb) {
+            cb(err, model && model.value);
+        }
+    });
 };
 
 MongoDAO.prototype.read = function(key, cb) {
@@ -49,7 +54,12 @@ MongoDAO.prototype.read = function(key, cb) {
     this.DataModel.findOne({
 
         key: key
-    }, cb);
+    }, function(err, model) {
+
+        if (cb) {
+            cb(err, model && model.value);
+        }
+    });
 };
 
 module.exports = MongoDAO;
