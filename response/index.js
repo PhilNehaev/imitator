@@ -1,9 +1,9 @@
 var config = require('../config'),
     utils = require('../utils'),
-    DAO = require('../dao'),
+    DAO = require('../dao/mongo'),
     CacheStream = require('../cache_stream');
 
-var cacheStorage = new DAO(config.daoType, 'cache');
+var cacheStorage = new DAO('cache');
 
 function Response(res, cacheKey, options) {
 

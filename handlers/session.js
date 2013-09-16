@@ -4,15 +4,14 @@ var config = require('../config'),
     Response = require('../response'),
     JSONStream = require('JSONStream'),
     es = require('event-stream'),
-    DAO = require('../dao'),
+    DAO = require('../dao/mongo'),
     url = require('url'),
     qs = require('querystring');
 
-var sessionStorage = new DAO(config.daoType, 'sid.cache');
-
 module.exports = function sessionHandler(req, res) {
 
-    var options = utils.getRequestOptions(req),
+    var sessionStorage = new DAO('sid.cache'),
+        options = utils.getRequestOptions(req),
         params = qs.parse(url.parse(req.url).query);
 
     utils.getCacheKey(options, function(err, cacheKey) {

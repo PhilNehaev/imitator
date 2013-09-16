@@ -20,8 +20,6 @@ module.exports = {
         port: process.env.PORT || 7000
     },
 
-    daoType: 'disk',
-
     dao: {
 
         disk: {
@@ -29,6 +27,11 @@ module.exports = {
             cache: path.join(__dirname, 'disk/cache_response'),
             'sid.cache': path.join(__dirname, 'disk/cache_sid'),
             json: path.join(__dirname, 'disk/mocks')
+        },
+
+        mongo: {
+
+            url: argv.mongoUrl || 'mongodb://localhost:27017/imitator'
         }
     },
 

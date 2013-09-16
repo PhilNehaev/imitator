@@ -1,7 +1,7 @@
 var config = require('../config'),
     utils = require('../utils'),
-    DAO = require('../dao'),
-    mockStorage = new DAO(config.daoType, 'json');
+    DAO = require('../dao/disk'),
+    mockStorage = new DAO('json');
 
 module.exports = function(cb) {
 

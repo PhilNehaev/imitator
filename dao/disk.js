@@ -1,10 +1,14 @@
-var config = require('../config'),
+var Base = require('./base'),
+    config = require('../config'),
+    util = require('util'),
     fs = require('fs'),
     path = require('path');
 
-function DAO(type, collectionName) {
+util.inherits(DiskDAO, Base);
 
-    this.collectionName = collectionName;
+function DiskDAO(collectionName) {
+
+    Base.apply(this, arguments);
 
     fs.exists(config.dao.disk[collectionName], function(isExist) {
 
@@ -18,12 +22,12 @@ function DAO(type, collectionName) {
     });
 }
 
-DAO.prototype.write = function(key, data, cb) {
+DiskDAO.prototype.write = function(key, data, cb) {
 
     fs.writeFile(this.getPath(key), data, cb);
 };
 
-DAO.prototype.read = function(key, cb) {
+DiskDAO.prototype.read = function(key, cb) {
 
     var filePath = this.getPath(key);
 
@@ -43,9 +47,9 @@ DAO.prototype.read = function(key, cb) {
     });
 };
 
-DAO.prototype.getPath = function(key) {
+DiskDAO.prototype.getPath = function(key) {
 
     return path.join(config.dao.disk[this.collectionName], key + '.' + this.collectionName);
 };
 
-module.exports = DAO;
+module.exports = DiskDAO;

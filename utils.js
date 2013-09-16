@@ -3,15 +3,14 @@ var config = require('./config'),
     extend = require('lodash').extend,
     url = require('url'),
     qs = require('querystring'),
-    DAO = require('./dao');
-
-var sessionStorage = new DAO(config.daoType, 'sid.cache');
+    DAO = require('./dao/mongo');
 
 module.exports = {
 
     getCacheKey: function(_options, cb) {
 
-        var params = qs.parse(url.parse(_options.path).query) || {},
+        var sessionStorage = new DAO('sid.cache'),
+            params = qs.parse(url.parse(_options.path).query) || {},
             options = extend({}, _options, {
 
                 path: _options.path
@@ -23,8 +22,7 @@ module.exports = {
         sessionStorage.read(params.sessionid, function(err, data) {
 
             options.linkedUsername = data;
-
-            console.log(data);
+            console.log('  Login: ' + data);
 
             cb(
                 null,
