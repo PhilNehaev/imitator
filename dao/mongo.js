@@ -21,11 +21,7 @@ var dataSchema = mongoose.Schema({
         last_update: {
 
             type: Date,
-            expires: config.dao.mongo.ttl,
-            default: function() {
-
-                return new Date();
-            }
+            expires: config.dao.mongo.ttl
         }
     });
 
@@ -47,7 +43,8 @@ MongoDAO.prototype.write = function(key, data, cb) {
         key: key
     }, {
 
-        value: data
+        value: data,
+        last_update: new Date()
     }, {
 
         upsert: true
