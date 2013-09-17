@@ -1,7 +1,9 @@
 var config = require('../config'),
     utils = require('../utils'),
     DAO = require('../dao/mongo'),
-    CacheStream = require('../cache_stream');
+    CacheStream = require('../cache_stream'),
+    _ = require('lodash'),
+    Buffer = require('buffer').Buffer;
 
 var cacheStorage = new DAO('cache');
 
@@ -31,14 +33,22 @@ Response.prototype.onFail = function(err) {
 
 Response.prototype.fromCache = function(err, data) {
 
-    this.setHeaders();
+    var cacheEmpty = config.responses[config.target.format].cacheEmpty;
 
     if (err || !data) {
 
-        this.res.end(config.responses[config.target.format].cacheEmpty);
+        this.setHeaders({
+
+            'Content-Length': Buffer.byteLength(cacheEmpty)
+        });
+        this.res.end(cacheEmpty);
         return this;
     }
 
+    this.setHeaders({
+
+        'Content-Length': Buffer.byteLength(data)
+    });
     this.res.end(data);
     console.log('  ' + data);
     console.log('  Response from cache. Key: ' + this.cacheKey);
@@ -51,18 +61,26 @@ Response.prototype.fromTarget = function(res) {
     var cacheStream = new CacheStream(cacheStorage, this.cacheKey, res)
         .on('error', this.onFail);
 
-    this.setHeaders();
+    this.setHeaders(_.pick(res.headers, 'Content-Length', 'content-length'));
 
     return res
         .pipe(cacheStream)
         .pipe(this.res);
 };
 
-Response.prototype.setHeaders = function() {
+Response.prototype.setHeaders = function(customs) {
 
-    this.res.writeHead(200, config.imitationHeaders);
+    this.res.writeHead(
+        200,
+        _.extend({}, config.headers[config.target.format], customs)
+    );
 
     return this;
 };
 
 module.exports = Response;
+
+/**
+ 'Content-Length': body.length,
+ 'Content-Type': 'text/plain'
+ * */
