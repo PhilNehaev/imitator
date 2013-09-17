@@ -79,8 +79,3 @@ Response.prototype.setHeaders = function(customs) {
 };
 
 module.exports = Response;
-
-/**
- 'Content-Length': body.length,
- 'Content-Type': 'text/plain'
- * */

@@ -1,5 +1,17 @@
 var config = require('./config'),
-    route = require('router')(),
+    cluster = require('cluster'),i=0;
+
+if (cluster.isMaster) {
+
+    for (var i = 0; i < config.numCPUs; i++) {
+
+        cluster.fork();
+    }
+
+    return;
+}
+
+var route = require('router')(),
     mockHandler = require('./handlers/mock'),
     server = require('http').createServer(mockHandler(function(req, res) {
 

@@ -55,5 +55,7 @@ module.exports = {
             timeout: '{"resultCode": "IMITATOR_ERROR",' +
                 '"errorMessage": "Was taken a global timeout"}'
         }
-    }
+    },
+
+    numCPUs: require('os').cpus().length
 };
