@@ -31,7 +31,8 @@ module.exports = {
 
         mongo: {
 
-            url: argv.mongoUrl || 'mongodb://localhost:27017/imitator'
+            url: argv.mongoUrl || 'mongodb://localhost:27017/imitator',
+            ttl: '1d'
         }
     },
 

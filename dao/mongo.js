@@ -16,6 +16,16 @@ var dataSchema = mongoose.Schema({
 
             type: String,
             required: true
+        },
+
+        last_update: {
+
+            type: Date,
+            expires: config.dao.mongo.ttl,
+            default: function() {
+
+                return new Date();
+            }
         }
     });
 
