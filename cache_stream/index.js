@@ -51,9 +51,9 @@ CacheStream.prototype._flush = function(cb) {
         cb();
     } else {
 
-        this._storage.read(this._cacheKey, function(err, data) {
+        this._storage.read(this._cacheKey, function(err, cacheData) {
 
-            this.responseFromCache(err, data);
+            this.responseFromCache(err, cacheData, data);
             cb();
         }.bind(this));
     }
@@ -61,23 +61,10 @@ CacheStream.prototype._flush = function(cb) {
 
 CacheStream.prototype.isValid = function(data) {
 
-    var isPayloadCorrectly = _.isString(data.payload);
-
-    if (!isPayloadCorrectly) {
-
-        try {
-
-            isPayloadCorrectly = !!_.values(data.payload).length;
-        } catch(e) {
-
-            isPayloadCorrectly = false;
-        }
-    }
-
     return [
         'INVALID_REQUEST_DATA', 'INTERNAL_ERROR', 'AUTHENTICATION_FAILED',
         'INSUFFICIENT_PRIVILEGES', 'REQUEST_RATE_LIMIT_EXCEEDED'
-    ].indexOf(data.resultCode) < 0 && isPayloadCorrectly && this._req.statusCode === 200;
+    ].indexOf(data.resultCode) < 0 && this._req.statusCode === 200;
 };
 
 CacheStream.prototype.parse = function(data) {
@@ -85,7 +72,7 @@ CacheStream.prototype.parse = function(data) {
     return JSON.parse(data);
 };
 
-CacheStream.prototype.responseFromCache = function(err, data) {
+CacheStream.prototype.responseFromCache = function(err, data, origData) {
 
     if (err && !data) {
 

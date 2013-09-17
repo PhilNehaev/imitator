@@ -15,7 +15,8 @@ module.exports = {
 
                 path: _options.path
                     .replace(/(&|\?)_=\d+/, '') // ignore jquery no-cache
-                    .replace(/(&|\?)sessionid=[\w\d\.\-]+/, ''), // ignore sessionid param
+                    .replace(/(&|\?)sessionid=[\w\d\.\-]+/, '') // ignore sessionid param
+                    .replace(/\//g, ''),
                 headers: {}
             });
 
@@ -23,6 +24,7 @@ module.exports = {
 
             options.linkedUsername = data;
             console.log('  Login: ' + data);
+            console.log('  SID: ' + params.sessionid);
 
             cb(
                 null,

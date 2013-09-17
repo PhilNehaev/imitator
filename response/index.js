@@ -35,13 +35,13 @@ Response.prototype.fromCache = function(err, data) {
 
     if (err || !data) {
 
-        this.res.end(config.responses[config.target.format].error);
+        this.res.end(config.responses[config.target.format].cacheEmpty);
         return this;
     }
 
-    console.log(data);
     this.res.end(data);
-    console.log('  Response from cache');
+    console.log('  ' + data);
+    console.log('  Response from cache. Key: ' + this.cacheKey);
 
     return this;
 };

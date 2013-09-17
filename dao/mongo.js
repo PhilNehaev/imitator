@@ -43,6 +43,10 @@ MongoDAO.prototype.write = function(key, data, cb) {
         upsert: true
     }, function(err, model) {
 
+        if (err) {
+            console.error(err);
+        }
+
         if (cb) {
             cb(err, model && model.value);
         }
@@ -51,10 +55,10 @@ MongoDAO.prototype.write = function(key, data, cb) {
 
 MongoDAO.prototype.read = function(key, cb) {
 
-    this.DataModel.findOne({
-
-        key: key
-    }, function(err, model) {
+    this.DataModel.findOne().or([
+        { key: key },
+        { value: key }
+    ]).exec(function(err, model) {
 
         if (cb) {
             cb(err, model && model.value);
