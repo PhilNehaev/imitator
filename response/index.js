@@ -68,7 +68,7 @@ Response.prototype.fromTarget = function(res) {
 
             this.setHeaders({
 
-                'Content-Length': data.length
+                'Content-Length': Buffer.byteLength(data)
             });
 
             return data;
