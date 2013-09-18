@@ -3,7 +3,8 @@ var config = require('../config'),
     DAO = require('../dao/mongo'),
     CacheStream = require('../cache_stream'),
     _ = require('lodash'),
-    Buffer = require('buffer').Buffer;
+    Buffer = require('buffer').Buffer,
+    es = require('event-stream');
 
 var cacheStorage = new DAO('cache');
 
@@ -61,10 +62,17 @@ Response.prototype.fromTarget = function(res) {
     var cacheStream = new CacheStream(cacheStorage, this.cacheKey, res)
         .on('error', this.onFail);
 
-    this.setHeaders(_.pick(res.headers, 'Content-Length', 'content-length'));
-
     return res
         .pipe(cacheStream)
+        .pipe(es.mapSync(function (data) {
+
+            this.setHeaders({
+
+                'Content-Length': data.length
+            });
+
+            return data;
+        }.bind(this)))
         .pipe(this.res);
 };
 
