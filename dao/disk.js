@@ -16,7 +16,7 @@ function DiskDAO(collectionName) {
 
             fs.mkdir(config.dao.disk[collectionName], function(err) {
 
-                console.log((err ? 'Error create' : 'Create') + ' directory for ' + collectionName);
+                console[err ? error : log]('Create directory for ' + collectionName);
             });
         }
     });

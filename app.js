@@ -6,6 +6,7 @@ if (cluster.isMaster) {
     for (var i = 0; i < config.numCPUs; i++) {
 
         cluster.fork();
+        cluster.on('exit', console.error);
     }
 
     return;
@@ -18,6 +19,11 @@ var route = require('router')(),
         console.log('Incoming request: ' + req.method + ' ' + req.url);
         route(req, res);
     }));
+
+if (!config.verbose) {
+
+    console.log = function(){};
+}
 
 route.all('/api/v1/session', require('./handlers/session'));
 route.all('*', require('./handlers/default'));

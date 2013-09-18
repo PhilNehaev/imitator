@@ -58,5 +58,7 @@ module.exports = {
         }
     },
 
-    numCPUs: require('os').cpus().length
+    numCPUs: require('os').cpus().length,
+
+    verbose: !!argv.verbose
 };
