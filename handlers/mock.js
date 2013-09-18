@@ -7,7 +7,7 @@ module.exports = function(cb) {
 
     return function(req, res) {
 
-        mockStorage.read(utils.getMockKey(req.url), function(err, data) {
+        mockStorage.read(utils.getMethodName(req.url), function(err, data) {
 
             if (!err && data) {
 

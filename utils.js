@@ -35,7 +35,7 @@ module.exports = {
         });
     },
 
-    getMockKey: function(mockPath) {
+    getMethodName: function(mockPath) {
 
         var match = mockPath.match(/\/api\/v1\/([a-z_]+)/);
 

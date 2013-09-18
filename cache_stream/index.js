@@ -2,7 +2,8 @@ var config = require('../config'),
     util = require('util'),
     stream = require('stream'),
     _ = require('lodash'),
-    StringDecoder = require('string_decoder').StringDecoder;
+    StringDecoder = require('string_decoder').StringDecoder,
+    getMethodName = require('../utils').getMethodName;
 
 util.inherits(CacheStream, stream.Transform);
 
@@ -41,10 +42,13 @@ CacheStream.prototype._flush = function(cb) {
 
     if (this.isValid(data)) {
 
-        this._storage.write(this._cacheKey, this._buffer, function(err) {
+        if (this.isCacheability(data)){
 
-            console[err ? 'error' : 'log']('  Response write to cache');
-        });
+            this._storage.write(this._cacheKey, this._buffer, function(err) {
+
+                console[err ? 'error' : 'log']('  Response write to cache');
+            });
+        }
 
         console.log('  Response from target server');
         this.push(this._buffer);
@@ -61,10 +65,25 @@ CacheStream.prototype._flush = function(cb) {
 
 CacheStream.prototype.isValid = function(data) {
 
-    return [
-        'INVALID_REQUEST_DATA', 'INTERNAL_ERROR', 'AUTHENTICATION_FAILED',
-        'INSUFFICIENT_PRIVILEGES', 'REQUEST_RATE_LIMIT_EXCEEDED'
-    ].indexOf(data.resultCode) < 0 && this._req.statusCode === 200;
+    return this._req.statusCode === 200;
+};
+
+CacheStream.prototype.isCacheability = function(data) {
+
+    var defaultPolitics = [
+            'INVALID_REQUEST_DATA', 'INTERNAL_ERROR', 'AUTHENTICATION_FAILED',
+            'INSUFFICIENT_PRIVILEGES', 'REQUEST_RATE_LIMIT_EXCEEDED'
+        ].indexOf(data.resultCode) < 0,
+        customPolitics = true;
+
+    try {
+        var validator = require('./validators/' + getMethodName(this._req.req.path));
+        customPolitics = validator(data);
+
+    } catch(e) {
+    }
+
+    return defaultPolitics && customPolitics;
 };
 
 CacheStream.prototype.parse = function(data) {
