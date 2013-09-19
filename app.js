@@ -14,11 +14,7 @@ if (cluster.isMaster) {
 
 var route = require('router')(),
     mockHandler = require('./handlers/mock'),
-    server = require('http').createServer(mockHandler(function(req, res) {
-
-        console.log('Incoming request: ' + req.method + ' ' + req.url);
-        route(req, res);
-    }));
+    server = require('http').createServer(mockHandler(route));
 
 if (!config.verbose) {
 

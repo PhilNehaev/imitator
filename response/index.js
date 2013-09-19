@@ -22,11 +22,13 @@ function Response(res, cacheKey, options) {
     this.onFail = this.onFail.bind(this);
     this.fromCache = this.fromCache.bind(this);
     this.fromTarget = this.fromTarget.bind(this);
+
+    console.log('Incoming request: ' + options.method + ' ' + options.path);
 }
 
 Response.prototype.onFail = function(err) {
 
-    console.error('  ' + (err || 'Error'));
+    console.error('  ' + (err || 'Error ') + this.options.path);
     cacheStorage.read(this.cacheKey, this.fromCache);
 
     return this;
@@ -51,8 +53,6 @@ Response.prototype.fromCache = function(err, data) {
         'Content-Length': Buffer.byteLength(data)
     });
     this.res.end(data);
-    console.log('  ' + data);
-    console.log('  Response from cache. Key: ' + this.cacheKey);
 
     return this;
 };

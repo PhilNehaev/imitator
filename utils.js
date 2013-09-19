@@ -23,8 +23,12 @@ module.exports = {
         sessionStorage.read(params.sessionid, function(err, data) {
 
             options.linkedUsername = data;
-            console.log('  Login: ' + data);
-            console.log('  SID: ' + params.sessionid);
+
+            if (config.debug) {
+
+                console.log('  Login: ' + data);
+                console.log('  SID: ' + params.sessionid);
+            }
 
             cb(
                 null,

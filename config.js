@@ -11,12 +11,12 @@ module.exports = {
         host: argv.targetHost || '172.16.10.29',
         port: argv.targetPort || 80,
         format: argv.targetFormat || 'json',
-        timeout: argv.targetTimeout || 2000
+        timeout: argv.targetTimeout || 5000
     },
 
     server: {
 
-        timeout: argv.serverTimeout || 5000,
+        timeout: argv.serverTimeout || 6000,
         port: process.env.PORT || 7000
     },
 

@@ -1,4 +1,4 @@
-module.exports = function(data) {
+module.exports.cacheability = function(data) {
 
     return data && data.payload !== 'ANONYMOUS';
 };
