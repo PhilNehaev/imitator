@@ -50,7 +50,8 @@ Response.prototype.fromCache = function(err, data) {
 
     this.setHeaders({
 
-        'Content-Length': Buffer.byteLength(data)
+        'Content-Length': Buffer.byteLength(data),
+        'Imitator-Response-From': 'Cache'
     });
     this.res.end(data);
 
@@ -68,7 +69,8 @@ Response.prototype.fromTarget = function(res) {
 
             this.setHeaders({
 
-                'Content-Length': Buffer.byteLength(data)
+                'Content-Length': Buffer.byteLength(data),
+                'Imitator-Response-From': 'Target'
             });
 
             return data;

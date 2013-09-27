@@ -12,37 +12,53 @@ module.exports = function sessionHandler(req, res) {
 
     var sessionStorage = new DAO('sid.cache'),
         options = utils.getRequestOptions(req),
-        params = qs.parse(url.parse(req.url).query);
+        params = qs.parse(url.parse(req.url).query),
+        body = '';
 
-    utils.getCacheKey(options, function(err, cacheKey) {
+    // get post data
+    req.on('data', function(chunk) {
 
-        var response = new Response(res, cacheKey, options);
+        body += chunk.toString();
+    });
 
-        if (err) {
+    req.on('end', function() {
 
-            response.fromCache(err);
-        }
+        utils.getCacheKey(options, function(err, cacheKey) {
 
-        var target = http.request(options, function(targetRes) {
+            var response = new Response(res, cacheKey, options);
 
-            response
-                .fromTarget(targetRes);
+            if (err) {
 
-            if (params.username) {
-
-                targetRes
-                    .pipe(JSONStream.parse('payload.sessionId'))
-                    .pipe(es.mapSync(function (sessionId) {
-
-                        return sessionStorage.write(sessionId, params.username);
-                    }));
+                response.fromCache(err);
             }
-        })
-            .on('error', response.onFail)
-            .on('timeout', response.onFail);
 
-        target.setTimeout(config.target.timeout);
+            var target = http.request(options)
+                .on('response', function(targetRes) {
 
-        req.pipe(target);
-    }.bind(this));
+                    response
+                        .fromTarget(targetRes);
+
+                    // get username from get or post-params
+                    body = qs.parse(body);
+                    var username = params.username || body.username;
+
+                    if (username) {
+
+                        targetRes
+                            .pipe(JSONStream.parse('payload.sessionId'))
+                            .pipe(es.mapSync(function (sessionId) {
+
+                                return sessionStorage.write(sessionId, username);
+                            }));
+                    }
+                })
+                .on('error', response.onFail)
+                .on('timeout', response.onFail);
+
+            target.write(body);
+            target.setTimeout(config.target.timeout);
+
+            req.pipe(target);
+        }.bind(this));
+    });
 };

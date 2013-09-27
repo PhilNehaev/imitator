@@ -3,9 +3,6 @@ var path = require('path'),
 
 module.exports = {
 
-    /**
-     * Target it is typically api address
-     */
     target: {
 
         host: argv.targetHost || '172.16.10.29',
