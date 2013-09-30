@@ -56,7 +56,7 @@ module.exports = {
             path: url.parse(req.url).path,
             headers: extend({}, req.headers, {
 
-                host: config.host,
+                host: config.target.host,
                 'accept-encoding': 'deflate'
             })
         };

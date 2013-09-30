@@ -18,10 +18,10 @@ var route = require('router')(),
 
 if (!config.verbose) {
 
-    console.log = function(){};
+    console.trace = console.log = function(){};
 }
 
-route.all('/api/v1/session', require('./handlers/session'));
+route.all('/api/v1/role_verification', require('./handlers/role_verification'));
 route.all('*', require('./handlers/default'));
 
 server.timeout = config.server.timeout;

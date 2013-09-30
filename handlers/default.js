@@ -14,6 +14,7 @@ module.exports = function defaultHandler(req, res) {
         if (err) {
 
             response.fromCache(err);
+            return;
         }
 
         var target = http.request(options, response.fromTarget)
