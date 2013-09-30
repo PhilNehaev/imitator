@@ -1,6 +1,6 @@
 var config = require('./config'),
     crypto = require('crypto'),
-    extend = require('lodash').extend,
+    _ = require('lodash'),
     url = require('url'),
     qs = require('querystring'),
     DAO = require('./dao/mongo');
@@ -11,7 +11,7 @@ module.exports = {
 
         var sessionStorage = new DAO('sid.cache'),
             params = qs.parse(url.parse(_options.path).query) || {},
-            options = extend({}, _options, {
+            options = _.extend({}, _options, {
 
                 path: _options.path
                     .replace(/(&|\?)_=\d+/, '') // ignore jquery no-cache
@@ -48,13 +48,20 @@ module.exports = {
 
     getRequestOptions: function(req) {
 
+        var path = url.parse(req.url).path;
+
+        _.each(config.target.pathReplace, function(replaceTo, regexp) {
+
+            path = path.replace(new RegExp(regexp), replaceTo);
+        });
+
         return {
 
             host: config.target.host,
             port: config.target.port,
             method: req.method,
-            path: url.parse(req.url).path,
-            headers: extend({}, req.headers, {
+            path: path,
+            headers: _.extend({}, req.headers, {
 
                 host: config.target.host,
                 'accept-encoding': 'deflate'
