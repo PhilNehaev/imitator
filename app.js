@@ -21,9 +21,10 @@ if (!config.verbose) {
     console.trace = console.log = function(){};
 }
 
-route.all('/*/v1/role_verification', require('./handlers/role_verification'));
-route.all('/*/explorer*', require('./handlers/pipe'));
-route.all('*', require('./handlers/default'));
+route.get('/{apiPath}?/v1/role_verification', require('./handlers/role_verification'));
+route.get('/{apiPath}?/explorer*', require('./handlers/pipe'));
+route.get('*', require('./handlers/default'));
+route.all('*', require('./handlers/pipe'));
 
 server.timeout = config.server.timeout;
 server.listen(config.server.port);
