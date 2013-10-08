@@ -5,15 +5,10 @@ var utils = require('../utils'),
 module.exports = function(req, res) {
 
     var options = utils.getRequestOptions(req),
-        target = http.request(options, function(_res) {
-
-            res.writeHead(
-                _res.statusCode,
-                _res.headers
-            );
+        _req = http.request(options, function(_res) {
 
             _res.pipe(res);
         });
 
-    target.end();
+    req.pipe(_req);
 };
