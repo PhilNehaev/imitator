@@ -23,9 +23,19 @@ var dataSchema = mongoose.Schema({
             type: Date,
             expires: config.dao.mongo.ttl
         }
+    }),
+    connect = mongoose.connect(config.dao.mongo.url, {
+
+        mongos: true
     });
 
-mongoose.connect(config.dao.mongo.url);
+connect.connections.forEach(function(connect) {
+
+    connect.on('error', function(err) {
+
+        console.error(new Date(), 'Mongo', err);
+    });
+});
 
 util.inherits(MongoDAO, Base);
 
