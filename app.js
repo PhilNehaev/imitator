@@ -22,6 +22,7 @@ if (!config.verbose) {
 }
 
 route.all('/api/v1/role_verification', require('./handlers/role_verification'));
+route.all('/api/explorer*', require('./handlers/pipe'));
 route.all('*', require('./handlers/default'));
 
 server.timeout = config.server.timeout;
