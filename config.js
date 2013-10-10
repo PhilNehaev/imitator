@@ -26,7 +26,6 @@ module.exports = {
 
     server: {
 
-        timeout: argv.serverTimeout || 10000,
         port: process.env.PORT || 7000
     },
 
@@ -68,9 +67,7 @@ module.exports = {
 
             error: '{"resultCode":"IMITATOR_ERROR"}',
             cacheEmpty: '{"resultCode":"IMITATOR_CACHE_EMPTY",' +
-                '"errorMessage":"The server’s response is not correct. The cache is empty."}',
-            timeout: '{"resultCode": "IMITATOR_ERROR",' +
-                '"errorMessage": "Was taken a global timeout"}'
+                '"errorMessage":"The server’s response is not correct. The cache is empty."}'
         }
     },
 

@@ -17,11 +17,12 @@ module.exports = function defaultHandler(req, res) {
             return;
         }
 
-        var target = http.request(options, response.fromTarget)
-            .on('error', response.onFail)
-            .on('timeout', response.onFail);
+        var target = http.request(options, response.fromTarget);
 
-        target.setTimeout(config.target.timeout);
+        target
+            .on('error', response.onFail)
+            .on('timeout', target.abort)
+            .setTimeout(config.target.timeout);
 
         req.pipe(target);
     });

@@ -24,7 +24,9 @@ module.exports = function defaultHandler(req, res) {
             return;
         }
 
-        var target = http.request(options, response.fromTarget)
+        var target = http.request(options, response.fromTarget);
+
+        target
             .on('response', function(targetRes) {
 
                 targetRes
@@ -35,9 +37,8 @@ module.exports = function defaultHandler(req, res) {
                     }));
             })
             .on('error', response.onFail)
-            .on('timeout', response.onFail);
-
-        target.setTimeout(config.target.timeout);
+            .on('timeout', target.abort)
+            .setTimeout(config.target.timeout);
 
         req.pipe(target);
     });

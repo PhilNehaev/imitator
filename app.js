@@ -26,12 +26,6 @@ route.get('/{apiPath}?/explorer*', require('./handlers/pipe'));
 route.get('*', require('./handlers/default'));
 route.all('*', require('./handlers/pipe'));
 
-server.timeout = config.server.timeout;
 server.listen(config.server.port);
-
-server.on('timeout', function(res) {
-
-    res.end(config.responses[config.target.format].timeout);
-});
 
 process.on('uncaughtException', console.error);
