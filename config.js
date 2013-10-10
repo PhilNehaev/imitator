@@ -10,7 +10,7 @@ module.exports = {
         port: argv.targetPort || 80,
         pathReplace: {},
         format: argv.targetFormat || 'json',
-        timeout: argv.targetTimeout || 5000
+        timeout: argv.targetTimeout || 10000
     }, {
 
         shared: {
@@ -26,7 +26,7 @@ module.exports = {
 
     server: {
 
-        timeout: argv.serverTimeout || 6000,
+        timeout: argv.serverTimeout || 10000,
         port: process.env.PORT || 7000
     },
 
