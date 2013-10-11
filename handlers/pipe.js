@@ -1,6 +1,5 @@
 var utils = require('../utils'),
-    http = require('http'),
-    buffer = require('buffer').Buffer;
+    http = require('http');
 
 module.exports = function(req, res) {
 

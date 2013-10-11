@@ -1,5 +1,6 @@
 var config = require('./config'),
-    cluster = require('cluster');
+    cluster = require('cluster'),
+    path = require('path');
 
 if (cluster.isMaster) {
 
@@ -12,19 +13,19 @@ if (cluster.isMaster) {
     return;
 }
 
-var route = require('router')(),
+var router = require('router')(),
     mockHandler = require('./handlers/mock'),
-    server = require('http').createServer(mockHandler(route));
+    server = require('http').createServer(mockHandler(router));
 
 if (!config.verbose) {
 
     console.trace = console.log = function(){};
 }
 
-route.get('/{apiPath}?/v1/role_verification', require('./handlers/role_verification'));
-route.get('/{apiPath}?/explorer*', require('./handlers/pipe'));
-route.get('*', require('./handlers/default'));
-route.all('*', require('./handlers/pipe'));
+config.target.routes.forEach(function(route) {
+
+    router[route.method](route.mask, require(path.join(__dirname, 'handlers', route.handlerName)));
+});
 
 server.listen(config.server.port);
 
