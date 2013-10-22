@@ -5,6 +5,7 @@
         "router": "0.6.x",
         "event-stream": "3.0.x",
         "JSONStream": "0.7.x",
-        "mongoose": "3.6.x"
+        "mongoose": "3.6.x",
+        "log4js": "0.6.x"
     }
 }
