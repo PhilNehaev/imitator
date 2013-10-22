@@ -1,6 +1,7 @@
 var config = require('./config'),
     cluster = require('cluster'),
-    path = require('path');
+    path = require('path'),
+    log4js = require('log4js');
 
 if (cluster.isMaster) {
 
@@ -17,9 +18,11 @@ var router = require('router')(),
     mockHandler = require('./handlers/mock'),
     server = require('http').createServer(mockHandler(router));
 
+log4js.replaceConsole();
+
 if (!config.verbose) {
 
-    console.trace = console.log = function(){};
+    log4js.setGlobalLogLevel('WARN');
 }
 
 config.target.routes.forEach(function(route) {

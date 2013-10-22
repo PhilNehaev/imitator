@@ -24,11 +24,8 @@ module.exports = {
 
             options.linkedUsername = data;
 
-            if (config.debug) {
-
-                console.log('  Login: ' + data);
-                console.log('  SID: ' + params.sessionid);
-            }
+            console.debug('  Login: ' + data);
+            console.debug('  SID: ' + params.sessionid);
 
             cb(
                 null,
