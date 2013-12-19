@@ -25,6 +25,11 @@ module.exports = {
             },
             {
                 method: 'get',
+                mask: '/{apiPath}?/v1/image*',
+                handlerName: 'pipe'
+            },
+            {
+                method: 'get',
                 mask: '*',
                 handlerName: 'default'
             },
